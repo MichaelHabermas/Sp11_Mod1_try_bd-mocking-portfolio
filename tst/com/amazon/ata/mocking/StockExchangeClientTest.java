@@ -1,7 +1,6 @@
 package com.amazon.ata.mocking;
 
 import com.amazon.stock.BuyStockRequest;
-import com.amazon.stock.BuyStockResponse;
 import com.amazon.stock.NonExistentStockException;
 import com.amazon.stock.SellStockRequest;
 import com.amazon.stock.SellStockResponse;
@@ -18,8 +17,9 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 class StockExchangeClientTest {
     @Mock
@@ -37,7 +37,7 @@ class StockExchangeClientTest {
 
     @BeforeEach
     public void setUp() {
-        initMocks(this);
+        openMocks(this);
     }
 
     @Test
@@ -57,8 +57,9 @@ class StockExchangeClientTest {
     }
 
     @Test
-    void getPrice_nonExistentStock_returnsNull() {
+    void getPrice_nonExistentStock_returnsNull() throws NonExistentStockException {
         // GIVEN
+        doThrow(NonExistentStockException.class).when(stockExchange).getMarketPrice(nonExistentStockSymbol);
 
         // WHEN
         BigDecimal price = client.getPrice(nonExistentStock);
